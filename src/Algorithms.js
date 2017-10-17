@@ -4,11 +4,11 @@ const Algorithms =
 {
     /**
      * 
-     * @param {*} f  - function.
-     * @param {*} x1 - lower bound.
-     * @param {*} x2 - upper bound.
-     * @param {*} e  - precision.
-     * @param {*} it - max iteractions.
+     * @param {string} f  - function.
+     * @param {double} x1 - lower bound.
+     * @param {double} x2 - upper bound.
+     * @param {double} e  - precision.
+     * @param {int} it - max iterations.
      */
     bisection(f, x1, x2, e, it = 100)
     {
@@ -51,43 +51,44 @@ const Algorithms =
         }
     },
 
+    /**
+     * 
+     * @param {string} fun - function.
+     * @param {double} x0 - first guess.
+     * @param {double} e - precision (epsilon).
+     * @param {int} it - max iterations.
+     */
     newton(fun, x0, e, it = 100)
     {
         let f = math.compile(fun);
-        let result, fx = f.eval({x: x0}), k = 0;
-        console.log(" -- ", fx, x0);
+        let fh = math.derivative(fun, 'x');
 
+        let fx = f.eval({x: x0}), k = 1;
+        
         if( Math.abs(fx) > e )
         {
-            k++;
-            let fxLine = (equivalent(fun))(x0);
-            let x1 = x0 - (fx/fxLine);
+            let fxLine = fh.eval({x: x0});
+            let x1 = x0 - (fx / fxLine);
             fx = f.eval({x: x1});
 
-            while(Math.abs(fx) > e && Math.abs(x1 - x0) > e && k <= it)
+            console.log(` -- Running #${k} iteration with x0=${x0}; x1=${x1} fx=${fx}`);
+
+            while( Math.abs(fx) > e && Math.abs(x1 - x0) > e && (k++) < it )
             {
-                k++;
+                console.log(` -- Running #${k} iteration with x0=${x0}; x1=${x1} fx=${fx}`);
+
                 x0 = x1;
-                fxLine = (equivalent(fun))(x0);
+                fxLine = fh.eval({x: x0});
                 x1 = x0 - (fx/fxLine);
                 fx = f.eval({x: x1});
-
-                console.log(" -- ", fx, x0);
             }
 
-            result = x1;
-        }
-        else {
-            result = x0;
+            console.log(" -> Iterations #", k, "; ε=", x1);
+            return;
         }
 
-        console.log(` -> Root: ${result} in ${k} iterations.`);
+        console.log(" -> First result is best ε=", x0);
     }
-}
-
-function equivalent(f) {
-    let dy = x => math.derivative(f, 'x').eval({x: x});
-    return x => math.compile(f).eval({x: x}) / dy(x);
 }
 
 module.exports = { Algorithms : Algorithms };

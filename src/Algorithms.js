@@ -88,6 +88,60 @@ const Algorithms =
         }
 
         console.log(" -> First result is best ε=", x0);
+    },
+
+    gauss(mat, x)
+    {
+        for(i=0; i < mat.length; i++) {
+            mat[i].push( x[i] );
+        }
+
+        let n = mat.length;
+        console.log(n, " => ", mat);
+
+        for(let k=0; k < n; k++)
+        {
+            let max = k;
+            for(let i=k+1; i < n; i++)
+                if(Math.abs(mat[i][k]) > Math.abs(mat[max][k]))
+                    max = i;
+
+            if(max === 0) {
+                console.log(" -> Matriz sem solução.");
+                return;
+            }
+
+            let temp = mat[k];
+            mat[k] = mat[max];
+            mat[max] = temp;
+
+            for(let i=k+1; i < n; i++)
+            {
+                let alpha = mat[i][k] / mat[k][k];
+                for(let j=k; j < mat[0].length; j++)
+                    mat[i][j] -= alpha * mat[k][j];
+            }
+
+            if(Math.abs(mat[k][k]) <= 1e-10) {
+                console.log("O determinante é zero (matriz singular).");
+                return;
+            }
+
+            console.log(mat);
+        }
+
+        let raizes = Array(n).fill(0);
+        
+        for(let i=n-1; i >= 0; i--)
+        {
+            let soma = 0;
+            for(let j=i+1; j < n; j++)
+                soma += mat[i][j] * raizes[j];
+
+            raizes[i] = (mat[i][mat[0].length-1] - soma) / mat[i][i];
+        }
+
+        console.log(" -> Result: ", raizes);
     }
 }
 

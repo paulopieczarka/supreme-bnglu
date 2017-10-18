@@ -11,10 +11,17 @@ const Main = () =>
     //     0.0001
     // );
 
-    Algorithms.newton(
-        'x^3 - 9x + 3',
-        .5,
-        .01
+    // Algorithms.newton(
+    //     'x^3 - 9x + 3',
+    //     .5,
+    //     .01
+    // );
+
+    Algorithms.gauss(
+        [[0, 2, 4], 
+         [1, 0, 2], 
+         [1, 3, 0]],
+        [6, 10, 14]
     );
 }
 

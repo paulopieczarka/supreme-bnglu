@@ -10,8 +10,10 @@ const Algorithms =
      * @param {double} e  - precision.
      * @param {int} it - max iterations.
      */
-    bisection(f, x1, x2, e, it = 100)
+    bisection(fun, x1, x2, e, it = 100)
     {
+        let f = math.compile(fun);
+
         if(Math.abs(x2 - x1) < e) {
             console.log(" -> Result: ", x1, " or ", x2);
             return;
@@ -23,8 +25,8 @@ const Algorithms =
         {
             console.log(` -- Iteration #${k}`);
 
-            f1 = f(x1);
-            f2 = f(x2);
+            f1 = f.eval({x: x1});
+            f2 = f.eval({x: x2});;
 
             if((f1 * f2) > 0) {
                 console.log(" -> Result: Guesses are wrong.");
@@ -38,7 +40,7 @@ const Algorithms =
                 break;
             }
 
-            let calcF = f(x);
+            let calcF = f.eval({x: x});
 
             if( (calcF * f1) > 0 ) {
                 x1 = x;
@@ -90,8 +92,19 @@ const Algorithms =
         console.log(" -> First result is best ε=", x0);
     },
 
+    /**
+     * Com pivoteamento parcial.
+     * @param {[[]]} mat - matrix
+     * @param {[]} x - vector (right part)
+     */
     gauss(mat, x)
     {
+        if(math.det(mat) === 0) {
+            console.log("O determinante da matriz é nulo.");
+            return;
+        }
+
+        // Completa a matriz (gera matriz aumentada).
         for(i=0; i < mat.length; i++) {
             mat[i].push( x[i] );
         }
@@ -101,6 +114,7 @@ const Algorithms =
 
         for(let k=0; k < n; k++)
         {
+            // Encontra o maior pivo em módulo.
             let max = k;
             for(let i=k+1; i < n; i++)
                 if(Math.abs(mat[i][k]) > Math.abs(mat[max][k]))
@@ -111,10 +125,12 @@ const Algorithms =
                 return;
             }
 
+            // Troca as linhas para o pivo ir para o lugar.
             let temp = mat[k];
             mat[k] = mat[max];
             mat[max] = temp;
 
+            // Gera a matriz triangular de coeficientes.
             for(let i=k+1; i < n; i++)
             {
                 let alpha = mat[i][k] / mat[k][k];
@@ -122,16 +138,11 @@ const Algorithms =
                     mat[i][j] -= alpha * mat[k][j];
             }
 
-            if(Math.abs(mat[k][k]) <= 1e-10) {
-                console.log("O determinante é zero (matriz singular).");
-                return;
-            }
-
             console.log(mat);
         }
 
+        // Encontra as raizes, resolvendo Ax = b
         let raizes = Array(n).fill(0);
-        
         for(let i=n-1; i >= 0; i--)
         {
             let soma = 0;
@@ -142,6 +153,81 @@ const Algorithms =
         }
 
         console.log(" -> Result: ", raizes);
+    },
+
+    /**
+     * @param {[[]]} mat - matrix
+     * @param {[]} vect - vector (right part)
+     */
+    LU(mat, vect)
+    {
+        console.log("det(A) = ", math.det(mat));
+        if(math.det(mat) === 0) {
+            console.log("O determinante da matriz é nulo.");
+            return;
+        }
+
+        let n = mat.length;
+
+        // decomposition of matrix.
+        let lu = Array(n).fill(0).map( x => Array(n).fill(0) );
+
+        for(let i=0; i < n; i++)
+        {
+            for(let j=i; j < n; j++)
+            {
+                let sum = 0;
+                for(let k=0; k < i; k++)
+                    sum += lu[i][k] * lu[k][j];
+                
+                lu[i][j] = mat[i][j] - sum;
+            }
+
+            for(let j=i+1; j < n; j++)
+            {
+                let sum = 0;
+                for(let k=0; k < i; k++) 
+                    sum += lu[j][k] * lu[k][i];
+                
+                lu[j][i] = (1 / lu[i][i]) * (mat[j][i] - sum);
+            }
+        }
+
+        // find solution of Ly = b
+        let y = Array(n).fill(0);
+
+        for(let i=0; i < n; i++)
+        {
+            let sum = 0;
+            for(let k=0; k < i; k++)
+                sum += lu[i][k] * y[k];
+            
+            y[i] = vect[i] - sum;
+        }
+
+        // find solution of Ux = y
+        let x = Array(n).fill(0);
+
+        for(let i=n-1; i >= 0; i--)
+        {
+            let sum = 0;
+            for(let k=i+1; k < n; k++)
+                sum += lu[i][k] * x[k];
+
+            x[i] = (1 / lu[i][i]) * (y[i] - sum);
+        }
+
+        console.log("Original:");
+        console.log(mat);
+
+        console.log("\nLU");
+        console.log(lu);
+
+        console.log("\nY");
+        console.log(y);
+
+        console.log("\nX");
+        console.log(x);
     }
 }
 

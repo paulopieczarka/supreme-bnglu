@@ -5,7 +5,7 @@ const Main = () =>
     console.log("Hello, World!");
     
     // Algorithms.bisection(
-    //     x => Math.pow(x,3) + 3 * Math.pow(x, 2) + 12 * x + 8,
+    //     'x^3 + 3(x^2) + 12x + 8',
     //     -5,
     //     5,
     //     0.0001
@@ -23,6 +23,13 @@ const Main = () =>
          [1, 3, 0]],
         [6, 10, 14]
     );
+
+    // Algorithms.LU(
+    //     [[3, 2, 4], 
+    //      [1, 1, 2], 
+    //      [4, 3, -2]],
+    //     [1, 2, 3]
+    // );
 }
 
 // Run.

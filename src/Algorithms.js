@@ -28,6 +28,8 @@ const Algorithms =
             f1 = f.eval({x: x1});
             f2 = f.eval({x: x2});;
 
+            // console.log(x1, x2, f1, f2);
+
             if((f1 * f2) > 0) {
                 console.log(" -> Result: Guesses are wrong.");
                 break;
@@ -35,7 +37,7 @@ const Algorithms =
 
             let x = (x1 + x2) / 2;
 
-            if( Math.abs((x2 - x1)/x) < e) {
+            if( Math.abs((x2 - x1)/*/x*/) < e) {
                 console.log(" -> Result: ", x);
                 break;
             }
@@ -168,12 +170,26 @@ const Algorithms =
         }
 
         let n = mat.length;
+        let tudoZero = true;
+        for(let i=0; i < n; i++) 
+        {
+            if(mat[i][i] !== 0) {
+                tudoZero = false;
+                break;
+            }
+        }
+
+        if(tudoZero) {
+            console.log("A diagonal principal é nula.");
+            return;
+        }
 
         // decomposition of matrix.
         let lu = Array(n).fill(0).map( x => Array(n).fill(0) );
 
         for(let i=0; i < n; i++)
         {
+            // U
             for(let j=i; j < n; j++)
             {
                 let sum = 0;
@@ -183,6 +199,7 @@ const Algorithms =
                 lu[i][j] = mat[i][j] - sum;
             }
 
+            // L
             for(let j=i+1; j < n; j++)
             {
                 let sum = 0;
